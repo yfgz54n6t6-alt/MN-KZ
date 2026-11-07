@@ -261,6 +261,7 @@ td .olgnote,.fcard .olgnote{margin-top:4px;padding:3px 7px;font-size:12.5px}
 .slines{display:flex;flex-direction:column;gap:2px}.sline{padding:8px 0;border-bottom:1px solid var(--line,#eee)}.sline .sm{font-weight:800;font-size:17px}.sline .se{color:var(--muted,#666);margin-top:2px}.sline .sk{font-size:13px;margin-top:4px;color:#6a5a8c}
 .songref{display:grid;grid-template-columns:32px 1fr;column-gap:8px;align-items:center}.songref .songno{grid-row:span 2;font-weight:800;color:#8a6bc2;text-align:center}
 .spk{border:none;background:#eef3fb;border-radius:999px;padding:2px 7px;margin-left:6px;cursor:pointer;font-size:14px;vertical-align:middle;line-height:1.4}.spk.big{font-size:20px;padding:6px 12px;margin-right:8px}.spk.playing{background:#ffe9a8}
+.support summary::-webkit-details-marker{display:none}
 </style>
 </head>
 <body>
@@ -8786,6 +8787,14 @@ function copyText(txt,msg){const done=()=>toast(msg||'Copied!');try{navigator.cl
   function fallback(){const ta=el('textarea',{style:'position:fixed;top:0;left:0;opacity:0'});ta.value=txt;document.body.append(ta);ta.select();try{document.execCommand('copy');done()}catch(e){toast('Could not copy – select the text and copy it yourself.')}ta.remove()}}
 function backupCode(){return btoa(unescape(encodeURIComponent(JSON.stringify({v:1,P,SRS,name:lsGet('mn-bay-name','')}))))}
 function restoreCode(code){try{const o=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));if(!o||!o.P)throw 0;Object.keys(P).forEach(k=>delete P[k]);Object.assign(P,o.P);P.k=P.k||{};Object.keys(SRS).forEach(k=>delete SRS[k]);Object.assign(SRS,o.SRS||{});saveP();saveSRS();if(o.name)lsSet('mn-bay-name',o.name);toast('Progress restored!');render()}catch(e){toast('That backup code did not work. Copy the whole code and try again.')}}
+function supportBox(){const ACC='5605140160',IBAN='MN690015005605140160';const row=(lab,val,shown)=>el('div',{class:'row',style:'gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0'},el('span',{class:'muted',style:'min-width:118px'},lab),el('b',{style:'font-size:1.05em;letter-spacing:.02em'},shown||val),el('button',{class:'btn small ghost',onclick:()=>copyText(val,lab+' copied.')},'📋 Copy'));
+  return el('details',{class:'support',style:'margin-top:14px'},el('summary',{class:'btn',style:'display:inline-block;background:#f3c34a;color:#3b2a00;cursor:pointer;list-style:none'},'💛 Support the app'),
+    el('div',{style:'margin-top:10px;background:#fff8e6;border:1px solid #f0d58a;border-radius:12px;padding:12px 14px'},
+      el('p',{style:'margin-top:0'},'The app is free and will stay free. Gifts go to ',el('b',{},'NLM Mongolia’s work'),'.'),
+      el('h3',{style:'margin:8px 0 4px;font-size:1em'},'🏦 Bank transfer in Mongolia'),
+      row('Account number',ACC),row('IBAN',IBAN,IBAN.replace(/(.{4})/g,'$1 ').trim()),
+      row('Transfer note','App gift'),
+      el('p',{class:'small muted',style:'margin-bottom:0'},'Open your bank app (Khan Bank, Golomt, TDB, State Bank …), choose transfer, and paste the account number. From abroad, use the IBAN. Thank you! – Баярлалаа! – Рақмет!')))}
 function viewHelp(){const ok=storageWorks();const H=(t)=>el('h2',{},t);
   const nameIn=el('input',{class:'tinput',type:'text',placeholder:'Your name',value:lsGet('mn-bay-name',''),oninput:e=>lsSet('mn-bay-name',e.target.value)});
   const report=el('textarea',{class:'report',readonly:true});report.value=progressReport();
@@ -8809,7 +8818,8 @@ function viewHelp(){const ok=storageWorks();const H=(t)=>el('h2',{},t);
       el('p',{},'The purpose of the app is to give foreigners easier access to learning tools and reference material for Mongolian and Kazakh as they are spoken in Mongolia. The app is non-profit and is continuously being developed and improved.'),
       el('p',{},'We therefore really appreciate your feedback – ideas for better features, new content and corrections to the language.'),
       el('a',{class:'btn green',style:'display:inline-block;text-decoration:none;margin-top:4px',href:'mailto:nlmmongolia@nlm.no?subject='+encodeURIComponent('Feedback: Mongolian & Kazakh app')+'&body='+encodeURIComponent('Hello,\n\nMy feedback on the app (feature / content / language correction):\n\n\n\n---\nPage: '+location.hash+'\nLanguage: '+LC.lname+'\n')},'✉️ Send feedback by e-mail'),
-      el('p',{class:'small muted',style:'margin-top:8px'},'E-mail: ',el('a',{href:'mailto:nlmmongolia@nlm.no'},'nlmmongolia@nlm.no'))),
+      el('p',{class:'small muted',style:'margin-top:8px'},'E-mail: ',el('a',{href:'mailto:nlmmongolia@nlm.no'},'nlmmongolia@nlm.no')),
+      supportBox()),
     el('div',{class:'card block'},H('🔊 Sound'),
       el('ul',{},el('li',{},'The 🔊 button appears next to words and sentences that have sound: in the vocabulary lists, examples, Bible verses and songs, on flashcards, in the kids’ part and after each exercise.'),
         el('li',{},'The voices are computer-generated (Microsoft Azure neural voices) and read a little slower than normal speech. They are very good, but not perfect – listen to Mongolians and to your teacher too.'),
