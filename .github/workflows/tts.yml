@@ -1,0 +1,29 @@
+name: Generate audio (Azure TTS)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['audio/texts-*.json']
+  schedule:
+    - cron: '17 */6 * * *'   # continue if a run stopped before everything was done
+permissions:
+  contents: write
+concurrency:
+  group: tts
+  cancel-in-progress: false
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Generate missing audio
+        env:
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
+        run: |
+          git config user.name "audio-bot"
+          git config user.email "audio-bot@users.noreply.github.com"
+          python .github/scripts/tts.py

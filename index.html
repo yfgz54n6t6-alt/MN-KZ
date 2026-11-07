@@ -260,6 +260,7 @@ td .olgnote,.fcard .olgnote{margin-top:4px;padding:3px 7px;font-size:12.5px}
 .songlist{display:flex;flex-direction:column;gap:6px;margin:8px 0}.songref{text-align:left;display:block;width:100%;padding:10px 12px}.kchrist{background:#f3ecff}
 .slines{display:flex;flex-direction:column;gap:2px}.sline{padding:8px 0;border-bottom:1px solid var(--line,#eee)}.sline .sm{font-weight:800;font-size:17px}.sline .se{color:var(--muted,#666);margin-top:2px}.sline .sk{font-size:13px;margin-top:4px;color:#6a5a8c}
 .songref{display:grid;grid-template-columns:32px 1fr;column-gap:8px;align-items:center}.songref .songno{grid-row:span 2;font-weight:800;color:#8a6bc2;text-align:center}
+.spk{border:none;background:#eef3fb;border-radius:999px;padding:2px 7px;margin-left:6px;cursor:pointer;font-size:14px;vertical-align:middle;line-height:1.4}.spk.big{font-size:20px;padding:6px 12px;margin-right:8px}.spk.playing{background:#ffe9a8}
 </style>
 </head>
 <body>
@@ -7363,6 +7364,7 @@ const LCS={
   books_desc:'Five levels from A1 to C1, with a revision test after every module.',kidsLang:'English/Norwegian–Kazakh',
   keys:'ә і ң ғ ү ұ қ ө һ|й ц у к е н г ш з х ъ|ф ы в а п р о л д ж э|я ч с м и т ь б ю ё'}};
 const LC=LCS[LANG];const BOOKS=LC.books;let BOOKKEYS=Object.keys(BOOKS);
+function switchLangAud(){setTimeout(audLoad,300)}
 function switchLang(v){try{localStorage.setItem('app-lang',v)}catch(e){}location.hash='lang='+v;location.reload()}
 _KM.forEach(([id,o])=>{const t=KIDS.find(x=>x.id===id);if(!t)return;const seen=new Set(t.words.map(w=>w[0]));t.words=t.words.concat((o.words||[]).filter(w=>!seen.has(w[0])));const ss=new Set(t.sent.map(x=>x[0]));t.sent=t.sent.concat((o.sent||[]).filter(x=>!ss.has(x[0])))});KIDS.forEach(t=>{if(!t.from)return;const seen=new Set(t.words.map(w=>w[0]));t.from.forEach(id=>{const f=KIDS.find(x=>x.id===id);if(f)f.words.forEach(w=>{if(!seen.has(w[0])){seen.add(w[0]);t.words.push(w)}})})});_TM.forEach(([id,l,b])=>{const t=TEXTS[id];if(!t)return;if(b){const last=t.lines.pop();t.lines=t.lines.concat(l,[last])}else t.lines=t.lines.concat(l)});BOOKKEYS=BOOKKEYS.filter(k=>LESSONS.some(l=>l.book===k));const LBYID={};LESSONS.forEach(l=>LBYID[l.id]=l);_MOREV.forEach(([id,v])=>{const l=LBYID[id];if(l)l.vocab=(l.vocab||[]).concat(v)});_PC.forEach(([id,o])=>{const l=LBYID[id];if(!l)return;l.pc=(l.pc||[]).concat(o.notes||[],o.ex?[o.ex]:[]);if(o.sent)_MORE.push([id,o.sent.map(s=>s.concat(s.length<4?[]:[]))])});_MX.forEach(([id,o])=>{const m=MODULES.find(x=>x.id===id);if(!m)return;['sections','sent','mc','vocab'].forEach(k=>{if(o[k])m[k]=(m[k]||[]).concat(o[k])});if(o.lessons)m.lessons=(m.lessons||[]).concat(o.lessons)});
   _MORE.forEach(([id,s])=>{const l=LBYID[id];if(l)l.sent=(l.sent||[]).concat(s)});LESSONS.forEach(l=>{const seen=new Set();l.sent=(l.sent||[]).filter(s=>{const k=s[0].trim();if(seen.has(k)||k.replace(/[.?!…]+$/,'').trim().split(/\s+/).length<2)return false;seen.add(k);return true})});
@@ -7408,6 +7410,21 @@ function olgProcess(root){if(LANG!=='kz'||!root)return;if(S.view==='module'&&S.m
     const nt=t.replace(rx,(m0,w,par,inner)=>{const std=M.get(w);const pm=par&&inner&&std&&inner.trim().toLowerCase()===std.toLowerCase();if(_OLV.has(w)&&!pm)return m0;found.push([w,std]);return w+'*'+(pm?'':(par||''))});
     if(nt!==t){n.nodeValue=nt;olgNote(n.parentElement,found)}}}
 let _olgQ=new Set(),_olgT=false;
+
+/* ---- Audio (Azure neural voices, pre-generated mp3 in audio/<lang>/<hash>.mp3) ---- */
+const AUDIO_REMOTE='https://yfgz54n6t6-alt.github.io/MN-KZ/';
+function audioBase(){return /github\.io$|^localhost$|azurestaticapps\.net$/.test(location.hostname)?'':AUDIO_REMOTE}
+function audNorm(t){return String(t).replace(/\*/g,'').replace(/\s*\([^)]*\)\s*$/,'').replace(/[«»“”"]/g,'').replace(/\s+/g,' ').trim()}
+function audHash(str){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<str.length;i++){const ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (h2>>>0).toString(16).padStart(8,'0')+(h1>>>0).toString(16).padStart(8,'0')}
+const AUD={idx:{},loading:{}};
+function audLoad(){const L=LANG;if(location.protocol==='file:')return;if(AUD.idx[L]||AUD.loading[L])return;AUD.loading[L]=1;fetch(audioBase()+'audio/'+L+'/index.json',{cache:'no-cache'}).then(r=>r.ok?r.json():[]).then(a=>{AUD.idx[L]=new Set(a);if(a.length)audScan()}).catch(()=>{AUD.idx[L]=new Set()})}
+function audHas(t){const I=AUD.idx[LANG];return !!(I&&I.has(audHash(audNorm(t))))}
+let AUD_CUR=null;
+function audPlay(t,btn){const u=audioBase()+'audio/'+LANG+'/'+audHash(audNorm(t))+'.mp3';try{if(AUD_CUR){AUD_CUR.pause()}const a=new Audio(u);AUD_CUR=a;if(btn){btn.classList.add('playing');a.onended=a.onerror=()=>btn.classList.remove('playing')}a.play().catch(()=>{btn&&btn.classList.remove('playing')})}catch(e){}}
+function spk(t){if(!audHas(t))return null;return el('button',{class:'spk',title:'Listen','aria-label':'Listen',onclick:e=>{e.stopPropagation();e.preventDefault();audPlay(t,e.currentTarget)}},'🔊')}
+const AUD_SEL='.vtable td[lang], .fside .big[lang=mn], .km, .sline .sm, .ex .m, .kword .km';
+function audScan(){const app=document.getElementById('app');if(!app||!AUD.idx[LANG]||!AUD.idx[LANG].size)return;app.querySelectorAll(AUD_SEL).forEach(e=>{if(e.dataset.spk)return;e.dataset.spk=1;const txt=[...e.childNodes].filter(n=>n.nodeType===3||(n.nodeType===1&&!n.classList.contains('badge')&&!n.classList.contains('spk')&&!n.classList.contains('olgnote'))).map(n=>n.textContent).join('').trim();const b=spk(txt);if(b)e.append(' ',b)})}
+function audWatch(){const app=document.getElementById('app');if(!app||!window.MutationObserver)return;let q=0;new MutationObserver(()=>{if(q)return;q=1;setTimeout(()=>{q=0;audScan()},30)}).observe(app,{childList:true,subtree:true})}
 function olgWatch(){const app=document.getElementById('app');if(!app||!window.MutationObserver)return;
   new MutationObserver(ms=>{if(LANG!=='kz')return;ms.forEach(m=>m.addedNodes.forEach(n=>{const e=n.nodeType===3?n.parentElement:n;if(e&&e.nodeType===1&&!(e.classList&&e.classList.contains('olgnote')))_olgQ.add(e)}));
     if(!_olgT){_olgT=true;queueMicrotask(()=>{_olgT=false;const q=[..._olgQ];_olgQ.clear();q.forEach(e=>{if(e.isConnected)try{olgProcess(e)}catch(err){}})})}}).observe(app,{childList:true,subtree:true})}
@@ -7965,7 +7982,7 @@ function kidGap(sents,words,n){const C=shuffle(kidGapCands(sents,words));const u
     const others=shuffle(words.filter(x=>x[0]!==w[0]&&!x[0].includes(' ')&&x[2]!==w[2])).slice(0,3);const o=shuffle([w[0]].concat(others.map(x=>x[0])));const shown=toks.slice();shown[i]=toks[i].replace(c,'____');
     out.push({type:'mc',kindLabel:ku('✍️ Hvilket ord mangler?','✍️ Which word is missing?'),q:(s[2]||'')+'  '+shown.join(' ')+'   ('+s[1]+')',o,a:o.indexOf(w[0]),ks:s,kw:w});if(out.length>=n)break}return out}
 function kidMix2(t,pool){return shuffle(kidPics(t.words,5).concat(kidMatch(sample(t.words,8)),sample(t.sent,3).map(s=>({type:'order',s})),kidSentMC(t.sent,2,pool),kidGap(t.sent,t.words,2)))}
-function nextBtn(){const R=S.run,last=R.i===R.items.length-1;const b=el('button',{class:'btn green',id:'nextbtn',onclick:nextItem},last?tr('results'):tr('next'));setTimeout(()=>b.focus(),0);
+function nextBtn(){const R=S.run,last=R.i===R.items.length-1;try{const it=R.items[R.i];const t=it&&(it.s?it.s[0]:null);if(t)setTimeout(()=>{const nb=document.getElementById('nextbtn');const sb=spk(t);if(nb&&sb&&!document.getElementById('runspk')){sb.id='runspk';sb.classList.add('big');nb.parentNode.insertBefore(sb,nb)}},0)}catch(e){}const b=el('button',{class:'btn green',id:'nextbtn',onclick:nextItem},last?tr('results'):tr('next'));setTimeout(()=>b.focus(),0);
   queueMicrotask(()=>{try{if(b.parentNode&&!document.getElementById('whybox')){const it=R.items[R.i];const wb=it?(R.kid?kidWhyBox(it):whyBox(it)):null;if(wb)b.parentNode.after(wb)}}catch(e){}});return b}
 /* order */
 let dragId=null;
@@ -8536,7 +8553,7 @@ function viewFcSession(){const F=S.fc;if(!F)return viewFlash();
     el('p',{class:'muted small',style:'text-align:center;margin-top:14px'},tr('keys')))}
 
 document.getElementById('bmark').textContent=LC.mark;document.getElementById('bname').textContent=LC.native;document.getElementById('bsub').textContent='Learn '+LC.lname+' · English–'+LC.lname;document.getElementById('foottxt').innerHTML=LC.footer;document.title=LC.lname+' – Lessons, Flashcards and Tests';
-olgWatch();hwWatch();fromHash();render();
+olgWatch();hwWatch();audWatch();fromHash();render();setTimeout(audLoad,300);
 </script>
 <script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
 </body>
