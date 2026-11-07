@@ -24,7 +24,7 @@ a{color:var(--blue)}
 header{background:var(--blue);color:#fff;position:sticky;top:0;z-index:5}
 .hwrap{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:12px 22px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:11px;cursor:pointer;margin-right:auto}
-.brand .mark{width:38px;height:38px;border-radius:10px;background:var(--gold);display:grid;place-items:center;font-weight:800;color:var(--blue);font-size:20px}
+.brand .mark{width:40px;height:40px;border-radius:10px;background:#b5121f url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%2248%2072%20416%20380%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23d4202f%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23a50f1f%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22512%22%20height%3D%22512%22%20fill%3D%22url%28%23bg%29%22/%3E%3Cg%20id%3D%22art%22%3E%3Cpath%20d%3D%22M118%2092h176a46%2046%200%200%201%2046%2046v104a46%2046%200%200%201-46%2046H178l-50%2044%206-44h-16a46%2046%200%200%201-46-46V138a46%2046%200%200%201%2046-46z%22%20fill%3D%22%23ffffff%22/%3E%3Cpath%20d%3D%22M232%20190h162a46%2046%200%200%201%2046%2046v100a46%2046%200%200%201-46%2046h-14l6%2042-48-42H232a46%2046%200%200%201-46-46V236a46%2046%200%200%201%2046-46z%22%20fill%3D%22%23ffe3e5%22%20stroke%3D%22%23b5121f%22%20stroke-width%3D%2210%22/%3E%3Ctext%20x%3D%22132%22%20y%3D%22218%22%20text-anchor%3D%22middle%22%20font-family%3D%22DejaVu%20Sans%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%22108%22%20fill%3D%22%23c8102e%22%3E%D3%A8%3C/text%3E%3Ctext%20x%3D%22313%22%20y%3D%22333%22%20text-anchor%3D%22middle%22%20font-family%3D%22DejaVu%20Sans%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%22120%22%20fill%3D%22%238e0b1c%22%3E%D2%9A%3C/text%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;box-shadow:0 1px 3px rgba(0,0,0,.25);font-size:0;color:transparent}
 .brand b{font-size:18px;display:block;line-height:1.1}.brand small{opacity:.8;font-size:12.5px}
 nav{display:flex;gap:6px;flex-wrap:wrap}
 nav button{background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 13px;border-radius:999px;font-size:14.5px}
@@ -267,9 +267,9 @@ td .olgnote,.fcard .olgnote{margin-top:4px;padding:3px 7px;font-size:12.5px}
 </head>
 <body>
 <header><div class="hwrap">
-  <div class="brand" onclick="go('home')"><div class="mark" id="bmark">Ө</div><div><b id="bname">Монгол хэл</b><small id="bsub">Learn Mongolian · English–Mongolian</small></div></div>
+  <div class="brand" onclick="go('home')"><div class="mark" id="bmark"></div><div><b id="bname">Монгол хэл</b><small id="bsub">Learn Mongolian · English–Mongolian</small></div></div>
   <div id="langbox"></div>
-  <button id="supbtn" title="Support the app" onclick="go('help',{support:1})">💛 Support</button>
+  <button id="supbtn" title="Support our work" onclick="go('help',{support:1})">💛 Support us</button>
   <nav id="nav"></nav>
 </div></header>
 <main id="app"></main>
@@ -8790,7 +8790,7 @@ function copyText(txt,msg){const done=()=>toast(msg||'Copied!');try{navigator.cl
 function backupCode(){return btoa(unescape(encodeURIComponent(JSON.stringify({v:1,P,SRS,name:lsGet('mn-bay-name','')}))))}
 function restoreCode(code){try{const o=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));if(!o||!o.P)throw 0;Object.keys(P).forEach(k=>delete P[k]);Object.assign(P,o.P);P.k=P.k||{};Object.keys(SRS).forEach(k=>delete SRS[k]);Object.assign(SRS,o.SRS||{});saveP();saveSRS();if(o.name)lsSet('mn-bay-name',o.name);toast('Progress restored!');render()}catch(e){toast('That backup code did not work. Copy the whole code and try again.')}}
 function supportBox(){const ACC='5605140160',IBAN='MN690015005605140160',PHONE='99013824';const row=(lab,val,shown)=>el('div',{class:'row',style:'gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0'},el('span',{class:'muted',style:'min-width:118px'},lab),el('b',{style:'font-size:1.05em;letter-spacing:.02em'},shown||val),el('button',{class:'btn small ghost',onclick:()=>copyText(val,lab+' copied.')},'📋 Copy'));
-  const d=el('details',{class:'support',id:'support',style:'margin-top:14px'},el('summary',{class:'btn',style:'display:inline-block;background:#f3c34a;color:#3b2a00;cursor:pointer;list-style:none'},'💛 Support the app'),
+  const d=el('details',{class:'support',id:'support',style:'margin-top:14px'},el('summary',{class:'btn',style:'display:inline-block;background:#f3c34a;color:#3b2a00;cursor:pointer;list-style:none'},'💛 Support us'),
     el('div',{style:'margin-top:10px;background:#fff8e6;border:1px solid #f0d58a;border-radius:12px;padding:12px 14px'},
       el('p',{style:'margin-top:0'},el('b',{},'If you enjoy the app and find it useful, it means a lot to us if you support our work. '),'The app is free and will stay free. Gifts go to ',el('b',{},'NLM Mongolia’s work'),'. NLM (Norwegian Lutheran Mission) is a non-profit organisation that has worked in Mongolia since 1994 – read more at ',el('a',{href:'https://nlm-mongolia.com',target:'_blank',rel:'noopener'},'nlm-mongolia.com'),'.'),
       el('h3',{style:'margin:8px 0 4px;font-size:1em'},'🏦 Bank transfer – Golomt Bank'),
@@ -9009,7 +9009,7 @@ function viewFcSession(){const F=S.fc;if(!F)return viewFlash();
     F.flip?el('div',{class:'fcbtns'},el('button',{class:'btn bad',onclick:()=>answer(0)},tr('fno')),el('button',{class:'btn',style:'background:#f3c34a;color:#3b2a00;border-color:#e0a800',onclick:()=>answer(1)},tr('fmid')),el('button',{class:'btn green',onclick:()=>answer(2)},tr('fyes'))):el('div',{class:'fcbtns'},el('button',{class:'btn',onclick:()=>{F.flip=true;render()}},tr('fshow'))),
     el('p',{class:'muted small',style:'text-align:center;margin-top:14px'},tr('keys')))}
 
-document.getElementById('bmark').textContent=LC.mark;document.getElementById('bname').textContent=LC.native;document.getElementById('bsub').textContent='Learn '+LC.lname+' · English–'+LC.lname;document.getElementById('foottxt').innerHTML=LC.footer;document.title=LC.lname+' – Lessons, Flashcards and Tests';
+document.getElementById('bmark').setAttribute('aria-label',LC.lname);document.getElementById('bname').textContent=LC.native;document.getElementById('bsub').textContent='Learn '+LC.lname+' · English–'+LC.lname;document.getElementById('foottxt').innerHTML=LC.footer;document.title=LC.lname+' – Lessons, Flashcards and Tests';
 olgWatch();hwWatch();audWatch();fromHash();render();setTimeout(audLoad,300);
 </script>
 <script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
