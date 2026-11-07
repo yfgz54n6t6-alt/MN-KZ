@@ -212,7 +212,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 @media(max-width:720px){.hwrap{padding:8px 12px}main{padding:12px 12px 60px}.tile{font-size:18px;padding:7px 12px}.match{gap:8px}.mbtn{font-size:15px}.fside .big{font-size:26px}}
 
 /* ---- compact, button-like layout (mobile first tweaks) ---- */
-#langbox{order:2}nav{order:3}
+#langbox{order:2}#supbtn{order:2}nav{order:3}
 .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;border:none;margin:14px 0 14px}
 .tabs .tabbtn{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:9px 6px;font-weight:800;color:var(--ink);font-size:14.5px;line-height:1.2;margin:0;box-shadow:0 1px 0 rgba(0,0,0,.04)}
 .tabs .tabbtn.active{background:var(--blue);border-color:var(--blue);color:#fff}
@@ -262,12 +262,14 @@ td .olgnote,.fcard .olgnote{margin-top:4px;padding:3px 7px;font-size:12.5px}
 .songref{display:grid;grid-template-columns:32px 1fr;column-gap:8px;align-items:center}.songref .songno{grid-row:span 2;font-weight:800;color:#8a6bc2;text-align:center}
 .spk{border:none;background:#eef3fb;border-radius:999px;padding:2px 7px;margin-left:6px;cursor:pointer;font-size:14px;vertical-align:middle;line-height:1.4}.spk.big{font-size:20px;padding:6px 12px;margin-right:8px}.spk.playing{background:#ffe9a8}
 .support summary::-webkit-details-marker{display:none}
+#supbtn{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);color:#fff;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}#supbtn:hover{background:rgba(255,255,255,.25)}#support{scroll-margin-top:120px}
 </style>
 </head>
 <body>
 <header><div class="hwrap">
   <div class="brand" onclick="go('home')"><div class="mark" id="bmark">Ө</div><div><b id="bname">Монгол хэл</b><small id="bsub">Learn Mongolian · English–Mongolian</small></div></div>
   <div id="langbox"></div>
+  <button id="supbtn" title="Support the app" onclick="go('help',{support:1})">💛 Support</button>
   <nav id="nav"></nav>
 </div></header>
 <main id="app"></main>
@@ -2601,7 +2603,7 @@ const KR_TIERS=[
  /* Tier 3 → Beginner 31–50 */
  [['сургах','to teach','v'],['гэрчлэл','testimony, witness','c'],['нигүүлсэл','grace, mercy','c'],['нигүүлсэнгүй','merciful, gracious','q'],['өршөөл','mercy, forgiveness','c'],['тэвчээр','patience, endurance','c'],['тэвчих','to endure, to be patient','v'],['гэмших','to repent','v'],['гэмшил','repentance','c'],['шийтгэл','punishment','c'],['хараал','curse','c'],['дахин төрөх','to be born again','v'],['ялах','to overcome, to win','v'],['чөлөөлөх','to set free','v'],['үйлчлэх','to serve','v'],['үйлчлэл','service, ministry','f'],['сахих','to keep, to guard','v'],['сахиул','guardian, keeper','p'],['мацаг барих','to fast','v'],['даруу','humble','q'],['бардам','proud, arrogant','q'],['шударга','righteous, honest, just','q'],['итгэмжтэй','faithful, trustworthy','q'],['хуурамч','false','q'],['бузар','unclean, impure','q'],['дуулгавартай','obedient','q'],['харь','foreign; gentile','q'],['зоригтой','bold, courageous','q'],['хишиг','gift of grace, blessing','c'],['мэргэн ухаан','wisdom','c'],['ухаан','mind, understanding','c'],['өв','inheritance','c'],['өвөг','forefather, ancestor','p'],['овог','clan, tribe','p'],['эд','possessions, wealth','p'],['тэргүүн','head, leader','p'],['татвар','tax','p'],['хилэн','wrath, anger','c'],['зүйрлэл','parable','c'],['үйл','deed, work','c']],
  /* Tier 4 → Intermediate 1–5 */
- [['сүр жавхлан','majesty','c'],['жигшүүрт зүйл','abomination','c'],['золиос','ransom, atoning sacrifice','c'],['мөс чанар','conscience','c'],['илчлэл','revelation','c'],['илчлэх','to reveal','v'],['зөн билэг','prophecy','c'],['амилуулалт','resurrection','c'],['амилуулах','to raise from the dead','v'],['нэгдэл','unity','c'],['тосолгоо','anointing','f'],['тэрслүү','rebellious','q'],['хүлцэнгүй','meek, submissive','q'],['дуулгавартай байдал','obedience','c'],['зөвт','righteous (justified)','q'],['аливаа','any, every kind of','q'],['Дээдийн Дээд','the Most High','q'],['Бүхнийг Чадагч','the Almighty','q'],['айлдах','to speak, to declare (of God or a king)','v'],['болгох','to make (into)','v'],['сэрэмжлэх','to keep watch, to be alert','v'],['үйлдэх','to do, to act','v'],['биелүүлэх','to fulfil','v'],['ариусгах','to sanctify, to make holy','v'],['тусгаарлах','to set apart','v'],['тунхаглах','to proclaim','v'],['хэрэг','matter, affair','c'],['эрх','right, authority','c'],['байдал','state, condition','c'],['хэсэг','part, piece','p'],['самуун','immorality','c'],['дүр','form, image','c'],['алга','palm (of the hand)','p'],['түмэн','ten thousand; multitude','p']]
+ [['сүр жавхлан','majesty','c'],['жигшүүрт зүйл','abomination','c'],['золиос','ransom, atoning sacrifice','c'],['мөс чанар','conscience','c'],['илчлэл','revelation','c'],['илчлэх','to reveal','v'],['зөн билэг','prophecy','c'],['амилуулалт','resurrection','c'],['амилуулах','to raise from the dead','v'],['нэгдэл','unity','c'],['тосолгоо','anointing','f'],['тэрслүү','rebellious','q'],['хүлцэнгүй','meek, submissive','q'],['дуулгавартай байдал','obedience','c'],['зөвт','righteous (justified)','q'],['аливаа','any, every kind of','q'],['Дээдийн Дээд','the Most High','q'],['Бүхнийг Чадагч','the Almighty','q'],['айлдах','to speak, to declare (of God or a king)','v'],['болгох','to make (into)','v'],['сэрэмжлэх','to keep watch, to be alert','v'],['үйлдэх','to do, to act','v'],['биелүүлэх','to fulfil','v'],['ариусгах','to sanctify, to make holy','v'],['тусгаарлах','to set apart','v'],['тунхаглах','to proclaim','v'],['хэрэг','matter, affair','c'],['эрх','right, authority','c'],['байдал','state, condition','c'],['хэсэг','part, piece','p'],['самуун','immorality','c'],['дүр','form, image','c'],['алга','palm (of the hand); (at the end of a sentence) there is none, not here','p'],['түмэн','ten thousand; multitude','p']]
 ];
 const KR_TARGETS=[[2,12,'B'],[13,30,'B'],[31,50,'B'],[1,5,'I']];
 const KR_ALL=[];
@@ -8077,7 +8079,7 @@ const MNPHR=[
 [/ тэр ч байтугай /,'«тэр ч байтугай» = “even, what is more”.'],
 [/ зэрэгцээ /,'«-ын зэрэгцээ» = “alongside”; «Үүний зэрэгцээ» = “at the same time”.'],
 [/(сан|сэн|сон|сөн) байв /,'«-сан байв» = “had (already) done” – one past event before another.'],
-[/ (аа|ээ|оо|өө) $/,'«аа/ээ/оо/өө» after a name or title = calling someone: Багш аа! (Teacher!)'],[/ хүндэтгэсэн /,'«Хүндэтгэсэн,» = “Respectfully,” – the usual closing of a formal letter.'],[/ анхааралд /,'«Та бүхний анхааралд!» = “Attention, everyone!” – the heading of a notice.'],[/ та бүхэнд /,'«та бүхэнд» = “to you all” – the polite way to address an audience (бүхэн = all).'],[/ хориглоно /,'«-хыг хориглоно» = “… is prohibited” (notices and rules).'],
+[/ (аа|ээ|оо|өө) $/,'«аа/ээ/оо/өө» after a name or title = calling someone: Багш аа! (Teacher!)'],[/ хүндэтгэсэн /,'«Хүндэтгэсэн,» = “Respectfully,” – the usual closing of a formal letter.'],[/ анхааралд /,'«Та бүхний анхааралд!» = “Attention, everyone!” – the heading of a notice.'],[/ алга $/,'«алга» at the end of a sentence = “there is none / it’s not here” (spoken, = байхгүй). The same word also means “palm of the hand”.'],[/ та бүхэнд /,'«та бүхэнд» = “to you all” – the polite way to address an audience (бүхэн = all).'],[/ хориглоно /,'«-хыг хориглоно» = “… is prohibited” (notices and rules).'],
 [/ үүрэгтэй /,'«-х үүрэгтэй» = “is obliged to”.'],
 [/ хувиар /,'«… хувиар өсөх/буурах» = “to rise/fall by … percent”.'],
 [/ хамрагд/,'«хамрагдах» = “to be included, take part” (report language).'],
@@ -8787,14 +8789,17 @@ function copyText(txt,msg){const done=()=>toast(msg||'Copied!');try{navigator.cl
   function fallback(){const ta=el('textarea',{style:'position:fixed;top:0;left:0;opacity:0'});ta.value=txt;document.body.append(ta);ta.select();try{document.execCommand('copy');done()}catch(e){toast('Could not copy – select the text and copy it yourself.')}ta.remove()}}
 function backupCode(){return btoa(unescape(encodeURIComponent(JSON.stringify({v:1,P,SRS,name:lsGet('mn-bay-name','')}))))}
 function restoreCode(code){try{const o=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));if(!o||!o.P)throw 0;Object.keys(P).forEach(k=>delete P[k]);Object.assign(P,o.P);P.k=P.k||{};Object.keys(SRS).forEach(k=>delete SRS[k]);Object.assign(SRS,o.SRS||{});saveP();saveSRS();if(o.name)lsSet('mn-bay-name',o.name);toast('Progress restored!');render()}catch(e){toast('That backup code did not work. Copy the whole code and try again.')}}
-function supportBox(){const ACC='5605140160',IBAN='MN690015005605140160';const row=(lab,val,shown)=>el('div',{class:'row',style:'gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0'},el('span',{class:'muted',style:'min-width:118px'},lab),el('b',{style:'font-size:1.05em;letter-spacing:.02em'},shown||val),el('button',{class:'btn small ghost',onclick:()=>copyText(val,lab+' copied.')},'📋 Copy'));
-  return el('details',{class:'support',style:'margin-top:14px'},el('summary',{class:'btn',style:'display:inline-block;background:#f3c34a;color:#3b2a00;cursor:pointer;list-style:none'},'💛 Support the app'),
+function supportBox(){const ACC='5605140160',IBAN='MN690015005605140160',PHONE='99013824';const row=(lab,val,shown)=>el('div',{class:'row',style:'gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0'},el('span',{class:'muted',style:'min-width:118px'},lab),el('b',{style:'font-size:1.05em;letter-spacing:.02em'},shown||val),el('button',{class:'btn small ghost',onclick:()=>copyText(val,lab+' copied.')},'📋 Copy'));
+  const d=el('details',{class:'support',id:'support',style:'margin-top:14px'},el('summary',{class:'btn',style:'display:inline-block;background:#f3c34a;color:#3b2a00;cursor:pointer;list-style:none'},'💛 Support the app'),
     el('div',{style:'margin-top:10px;background:#fff8e6;border:1px solid #f0d58a;border-radius:12px;padding:12px 14px'},
-      el('p',{style:'margin-top:0'},'The app is free and will stay free. Gifts go to ',el('b',{},'NLM Mongolia’s work'),'.'),
-      el('h3',{style:'margin:8px 0 4px;font-size:1em'},'🏦 Bank transfer in Mongolia'),
+      el('p',{style:'margin-top:0'},el('b',{},'If you enjoy the app and find it useful, it means a lot to us if you support our work. '),'The app is free and will stay free. Gifts go to ',el('b',{},'NLM Mongolia’s work'),'. NLM (Norwegian Lutheran Mission) is a non-profit organisation that has worked in Mongolia since 1994 – read more at ',el('a',{href:'https://nlm-mongolia.com',target:'_blank',rel:'noopener'},'nlm-mongolia.com'),'.'),
+      el('h3',{style:'margin:8px 0 4px;font-size:1em'},'🏦 Bank transfer – Golomt Bank'),
       row('Account number',ACC),row('IBAN',IBAN,IBAN.replace(/(.{4})/g,'$1 ').trim()),
+      el('h3',{style:'margin:10px 0 4px;font-size:1em'},'📱 SocialPay / phone transfer'),
+      row('Phone number',PHONE),
       row('Transfer note','App gift'),
-      el('p',{class:'small muted',style:'margin-bottom:0'},'Open your bank app (Khan Bank, Golomt, TDB, State Bank …), choose transfer, and paste the account number. From abroad, use the IBAN. Thank you! – Баярлалаа! – Рақмет!')))}
+      el('p',{class:'small muted',style:'margin-bottom:0'},'Open your bank app or SocialPay, choose transfer, and paste the account number or phone number. From abroad, use the IBAN. Thank you! – Баярлалаа! – Рақмет!')));
+  if(S.support){d.open=true;S.support=0;setTimeout(()=>{try{d.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}},80)}return d}
 function viewHelp(){const ok=storageWorks();const H=(t)=>el('h2',{},t);
   const nameIn=el('input',{class:'tinput',type:'text',placeholder:'Your name',value:lsGet('mn-bay-name',''),oninput:e=>lsSet('mn-bay-name',e.target.value)});
   const report=el('textarea',{class:'report',readonly:true});report.value=progressReport();
@@ -8814,7 +8819,7 @@ function viewHelp(){const ok=storageWorks();const H=(t)=>el('h2',{},t);
         el('li',{},el('b',{},'✝️ Christian'),': the Lord’s Prayer, Bible verses with every word explained, the books of the Bible, the language of the Bible and of prayer'+(LANG==='mn'?', the Creed and hymns with translation':'')+'.'),
         el('li',{},el('b',{},'🔊 Sound'),': tap 🔊 to hear a word or sentence read by a natural '+(LANG==='kz'?'Kazakh':'Mongolian')+' voice (see “Sound” below).'))),
     el('div',{class:'card block'},H('👤 About the app'),
-      el('p',{},'The app is made by ',el('b',{},'Jostein Namsvatn'),'. He works for the Norwegian Lutheran Mission (NLM) Mongolia and currently lives in Khovd, Mongolia.'),
+      el('p',{},'The app is made by ',el('b',{},'Jostein Namsvatn'),'. He works for the Norwegian Lutheran Mission (NLM) Mongolia and currently lives in Khovd, Mongolia. NLM is a non-profit organisation that has worked in Mongolia since 1994 – ',el('a',{href:'https://nlm-mongolia.com',target:'_blank',rel:'noopener'},'nlm-mongolia.com'),'.'),
       el('p',{},'The purpose of the app is to give foreigners easier access to learning tools and reference material for Mongolian and Kazakh as they are spoken in Mongolia. The app is non-profit and is continuously being developed and improved.'),
       el('p',{},'We therefore really appreciate your feedback – ideas for better features, new content and corrections to the language.'),
       el('a',{class:'btn green',style:'display:inline-block;text-decoration:none;margin-top:4px',href:'mailto:nlmmongolia@nlm.no?subject='+encodeURIComponent('Feedback: Mongolian & Kazakh app')+'&body='+encodeURIComponent('Hello,\n\nMy feedback on the app (feature / content / language correction):\n\n\n\n---\nPage: '+location.hash+'\nLanguage: '+LC.lname+'\n')},'✉️ Send feedback by e-mail'),
