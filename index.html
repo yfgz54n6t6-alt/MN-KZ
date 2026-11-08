@@ -9655,7 +9655,7 @@ function revDB(){return new Promise((ok,no)=>{const r=indexedDB.open('mnkz-revie
 async function recPut(o){const d=await revDB();return new Promise(ok=>{const tx=d.transaction('rec','readwrite');tx.objectStore('rec').put(o);tx.oncomplete=()=>ok()})}
 async function recAll(){const d=await revDB();return new Promise(ok=>{const q=d.transaction('rec').objectStore('rec').getAll();q.onsuccess=()=>ok((q.result||[]).filter(x=>x.lang===LANG))})}
 async function recDel(k){const d=await revDB();return new Promise(ok=>{const tx=d.transaction('rec','readwrite');tx.objectStore('rec').delete(k);tx.oncomplete=()=>ok()})}
-let REVREC=new Set();async function revLoadRec(){try{REVREC=new Set((await recAll()).map(x=>x.t))}catch(e){}}
+let REVREC=new Set();async function revLoadRec(){try{REVREC=new Set((await recAll()).map(x=>x.orig||x.t))}catch(e){}}
 /* zip (store) */
 const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
 function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRCT[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
@@ -9686,7 +9686,7 @@ function revRecBtn(it,where,onDone){if(!navigator.mediaDevices||!window.MediaRec
       r.ondataavailable=x=>{if(x.data&&x.data.size)ch.push(x.data)};
       r.onstop=async()=>{st.getTracks().forEach(x=>x.stop());REC=null;b.classList.remove('rec-on');const blob=new Blob(ch,{type:r.mimeType||'audio/webm'});
         const url=URL.createObjectURL(blob);new Audio(url).play().catch(()=>{});
-        await recPut({k:LANG+'|'+it.t,lang:LANG,t:it.t,hash:audHash(audNorm(it.t.split(' | ')[0])),blob,type:blob.type,ts:Date.now(),where});REVREC.add(it.t);b.textContent='🎙️✓';onDone&&onDone()};
+        const fx=Object.values(revState().items).find(v=>v.st==='fix'&&v.t===it.t);const tt=(fx&&fx.fix?fx.fix:it.t).split(' | ')[0];await recPut({k:LANG+'|'+it.t,lang:LANG,t:tt,orig:it.t,hash:audHash(audNorm(tt)),blob,type:blob.type,ts:Date.now(),where});REVREC.add(it.t);b.textContent='🎙️✓';onDone&&onDone()};
       r.start();b.classList.add('rec-on');b.textContent='⏹️ Stop';setTimeout(()=>{if(r.state==='recording')r.stop()},20000)}catch(e){alert('The microphone is not available. Allow microphone access for this app in the phone settings.')}};return b}
 let REVLOADED=0;function viewReview(){if(!REVLOADED){REVLOADED=1;revLoadRec().then(()=>{if(S.view==='review')render()})}const r=revState();const G=revSections();
   if(!S.rsec){const nm=el('input',{class:'sugnm',type:'text',value:r.name||'',placeholder:'Your name',onchange:e=>{const x=revState();x.name=e.target.value.trim();revSave(x)}});
