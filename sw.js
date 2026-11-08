@@ -1,5 +1,5 @@
 /* Offline support. New version: change VERSION (done automatically by the build). */
-const VERSION='20261108-1753';const CACHE='sprak-'+VERSION;
+const VERSION='20261108-1850';const CACHE='sprak-'+VERSION;
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!=='sprak-audio').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
