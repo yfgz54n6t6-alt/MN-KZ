@@ -46,7 +46,7 @@ h1{font-size:28px;margin:0 0 6px;line-height:1.2}h2{font-size:21px;margin:0 0 8p
 .lcard .s{color:var(--muted);font-size:13px}
 .lcard.test .ic{background:var(--gold-soft)}.lcard.test .num{color:#8a6410}
 .lcard.mod .ic{background:var(--purple-soft)}.lcard.mod .num{color:var(--purple)}
-.suggest{display:inline-block;font-size:12.5px;color:var(--muted);text-decoration:none;margin:6px 4px;font-weight:600}.suggest:hover{color:var(--blue);text-decoration:underline}#runsug{flex-basis:100%;text-align:center}.recwrap{display:inline-flex;gap:4px;align-items:center}.spk.rec.playing{background:var(--bad-soft)}.fcextra{margin-top:10px;display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap}.latwarn{color:var(--bad);font-weight:700;font-size:13.5px;margin:6px 0}.tycopy{font-size:26px;font-weight:800;letter-spacing:.5px}
+.sugov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:flex-end;justify-content:center}.sugbox{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px 16px 22px;max-height:92vh;overflow:auto}@media(min-width:720px){.sugov{align-items:center}.sugbox{border-radius:18px}}.sugta,.sugnm{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:16px;margin-top:6px}.sugbtns{display:flex;flex-wrap:wrap;gap:8px}button.suggest{background:none;border:0;cursor:pointer;padding:0}.suggest{display:inline-block;font-size:12.5px;color:var(--muted);text-decoration:none;margin:6px 4px;font-weight:600}.suggest:hover{color:var(--blue);text-decoration:underline}#runsug{flex-basis:100%;text-align:center}.recwrap{display:inline-flex;gap:4px;align-items:center}.spk.rec.playing{background:var(--bad-soft)}.fcextra{margin-top:10px;display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap}.latwarn{color:var(--bad);font-weight:700;font-size:13.5px;margin:6px 0}.tycopy{font-size:26px;font-weight:800;letter-spacing:.5px}
 .mgroups{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}.mgroup{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}.mgroup>summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:13px 14px}.mgroup>summary::-webkit-details-marker{display:none}.mgroup .ic{width:44px;height:44px;flex:0 0 44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--purple-soft)}.mgroup .mgt{flex:1}.mgroup .t{font-weight:800;font-size:16.5px}.mgroup .s{color:var(--muted);font-size:13px;margin-top:2px}.mgroup .num{color:var(--purple);font-size:12px;font-weight:800;margin-top:4px}.mgarrow{font-size:26px;color:var(--muted);transition:transform .15s}.mgroup[open] .mgarrow{transform:rotate(90deg)}.mgroup[open]>summary{border-bottom:1px solid var(--line);background:var(--purple-soft)}.mggrid{padding:10px}
 .dots{display:flex;gap:4px;margin-top:6px}.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--ok)}
 .badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--blue-soft);color:var(--blue)}
@@ -276,7 +276,7 @@ td .olgnote,.fcard .olgnote{margin-top:4px;padding:3px 7px;font-size:12.5px}
   <nav id="nav"></nav>
 </div></header>
 <main id="app"></main>
-<footer><span id="foottxt"></span> Your progress is saved only in this browser – see <a href="#help" onclick="go('help');return false">Guide</a>.<br><a id="footsug" class="suggest" href="#" target="_blank" rel="noopener">✏️ Suggest a change to this page</a></footer>
+<footer><span id="foottxt"></span> Your progress is saved only in this browser – see <a href="#help" onclick="go('help');return false">Guide</a>.<br><a id="footsug" class="suggest" href="#">✏️ Suggest a change to this page</a></footer>
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
 const LANG=(()=>{try{if(/lang=kz/.test(location.hash))return 'kz';if(/lang=mn/.test(location.hash))return 'mn';return localStorage.getItem('app-lang')||'mn'}catch(e){return /lang=kz/.test(location.hash)?'kz':'mn'}})();let DS='mn';
@@ -9533,8 +9533,24 @@ function itemText(it){if(!it)return'';if(it.s)return it.s[0]+' = '+it.s[1];if(it
 function suggestHref(where,txt){const L=LANG==='kz'?'Kazakh':'Mongolian';const sub=('[MN-KZ app] Suggestion · '+L+' · '+where).slice(0,140);
   const body='Where in the app: '+where+'\nText now: '+(txt||'–')+'\n\nMy suggestion (what should it say, and why?):\n\n\n\nMy name (optional):\n';
   return 'mailto:nlmmongolia@nlm.no?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body)}
-function suggestBtn(where,txt){return el('a',{class:'suggest',href:suggestHref(where,txt),target:'_blank',rel:'noopener',onclick:e=>e.stopPropagation()},'✏️ Suggest a change')}
-function updFootSug(){const a=document.getElementById('footsug');if(!a)return;let txt='';if(S.view==='run'&&S.run)txt=itemText(S.run.items[S.run.i]);a.href=suggestHref(pageWhere(),txt)}
+function suggestBtn(where,txt){return el('button',{class:'suggest',onclick:e=>{e.stopPropagation();e.preventDefault();openSuggest(where,txt)}},'✏️ Suggest a change')}
+function openSuggest(where,txt){const L=LANG==='kz'?'Kazakh':'Mongolian';const to='nlmmongolia@nlm.no';const sub=('[MN-KZ app] Suggestion · '+L+' · '+where).slice(0,140);
+  const ta=el('textarea',{class:'sugta',rows:5,placeholder:'What should it say, and why? (any language)'});const nm=el('input',{class:'sugnm',type:'text',placeholder:'Your name (optional)'});
+  const body=()=>'Where in the app: '+where+'\nText now: '+(txt||'–')+'\n\nMy suggestion:\n'+(ta.value.trim()||'…')+'\n\nName: '+(nm.value.trim()||'–')+'\n';
+  const E=encodeURIComponent;const close=()=>ov.remove();const msg=el('div',{class:'muted small',style:'min-height:18px'});
+  const open=u=>{window.open(u,'_blank','noopener')};
+  const ov=el('div',{class:'sugov',onclick:e=>{if(e.target===ov)close()}},el('div',{class:'sugbox'},
+    el('div',{class:'row'},el('h2',{style:'margin:0'},'✏️ Suggest a change'),el('span',{class:'spacer'}),el('button',{class:'btn ghost small',onclick:close},'✕')),
+    el('p',{class:'muted small'},'Where: '+where+(txt?' · Now: «'+txt+'»':'')),ta,nm,
+    el('p',{class:'small',style:'margin:10px 0 6px;font-weight:700'},'Send it with:'),
+    el('div',{class:'sugbtns'},
+      el('button',{class:'btn',onclick:()=>{location.href='mailto:'+to+'?subject='+E(sub)+'&body='+E(body())}},'📧 My e-mail app'),
+      el('button',{class:'btn ghost',onclick:()=>open('https://mail.google.com/mail/?view=cm&fs=1&to='+E(to)+'&su='+E(sub)+'&body='+E(body()))},'Gmail'),
+      el('button',{class:'btn ghost',onclick:()=>open('https://outlook.live.com/mail/0/deeplink/compose?to='+E(to)+'&subject='+E(sub)+'&body='+E(body()))},'Outlook / Hotmail'),
+      el('button',{class:'btn ghost',onclick:async()=>{const t='To: '+to+'\nSubject: '+sub+'\n\n'+body();try{await navigator.clipboard.writeText(t);msg.textContent='✓ Copied. Paste it into an e-mail to '+to+'.'}catch(e){msg.textContent='Copy did not work – please send an e-mail to '+to+'.'}}},'📋 Copy the text')),
+    msg));
+  document.body.append(ov);setTimeout(()=>ta.focus(),50)}
+function updFootSug(){const a=document.getElementById('footsug');if(!a)return;a.onclick=e=>{e.preventDefault();let txt='';if(S.view==='run'&&S.run)txt=itemText(S.run.items[S.run.i]);else if(S.view==='fcsession'&&S.fc){const c=S.fc.queue&&S.fc.queue[S.fc.pos];if(c)txt=c.mn+' = '+c.en}openSuggest(pageWhere(),txt)}}
 
 /* --- review of what you got wrong --- */
 const REV_DAYS=[1,3,7];
