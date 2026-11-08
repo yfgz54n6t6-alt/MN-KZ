@@ -9646,7 +9646,7 @@ function revSections(){const G=[];
   BOOKKEYS.forEach(k=>G.push({g:BOOKS[k].full||BOOKS[k].name,secs:lessonsOf(k).map(l=>({id:'L:'+l.id,title:lessonLabel(l)+': '+l.title,src:()=>({sent:l.sent,vocab:l.vocab,secs:l.grammar,lines:TEXTS[l.id]?TEXTS[l.id].lines:[]})}))}));
   G.push({g:'Grammar modules and situations',secs:MODULES.filter(m=>m.group!=='church').map(m=>({id:'M:'+m.id,title:m.icon+' '+m.title,src:()=>({sent:m.sent,vocab:m.vocab,secs:m.sections})}))});
   const ch=MODULES.filter(m=>m.group==='church');if(ch.length)G.push({g:'Christian',secs:ch.map(m=>({id:'M:'+m.id,title:m.icon+' '+m.title,src:()=>({sent:m.sent,vocab:m.vocab,secs:m.sections})}))});
-  if(KIDS.length)G.push({g:'Kids',secs:[{id:'K:abc',title:'🔤 Alphabet words',src:()=>({words:KABC.map(x=>[x[1],x[3],x[4]])})}].concat(KIDS.map(t=>({id:'K:'+t.id,title:(t.icon||'')+' '+t.title,src:()=>({words:t.words,sent:t.sent})})))});
+  if(KIDS.length)G.push({g:'Kids',secs:[{id:'K:abc',title:'🔤 Alphabet words',src:()=>({words:KABC.map(x=>[x[1],x[3],x[4]])})}].concat(KIDS.map(t=>({id:'K:'+t.id,title:(t.icon||'')+' '+(KENM[t.title]||t.title),src:()=>({words:t.words.map(w=>[w[0],KENM[w[1]]||w[1]]),sent:t.sent.map(x=>[x[0],KENM[x[1]]||x[1]])})})))});
   const snd=[];if(LANG==='mn'){const m=MODULES.find(x=>x.id==='g-speech');if(m)snd.push({id:'A:speech',title:'🗣️ Spoken short forms (contracted words)',audio:1,src:()=>({sent:m.sent,secs:m.sections})})}
   else{const m=MODULES.find(x=>x.id==='kg-olgii');snd.push({id:'A:olgii',title:'🏔️ Ölgii words and pronunciation',audio:1,src:()=>{const W=olgWords(wordBank());return{sent:m?m.sent:[],vocab:(m?m.vocab||[]:[]).concat(W.map(w=>[w.mn,w.en]))}}})}
   G.unshift({g:'🎙️ Sound check – most important to record',secs:snd});return G}
