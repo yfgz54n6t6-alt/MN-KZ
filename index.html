@@ -46,6 +46,7 @@ h1{font-size:28px;margin:0 0 6px;line-height:1.2}h2{font-size:21px;margin:0 0 8p
 .lcard .s{color:var(--muted);font-size:13px}
 .lcard.test .ic{background:var(--gold-soft)}.lcard.test .num{color:#8a6410}
 .lcard.mod .ic{background:var(--purple-soft)}.lcard.mod .num{color:var(--purple)}
+.mgroups{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}.mgroup{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}.mgroup>summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:13px 14px}.mgroup>summary::-webkit-details-marker{display:none}.mgroup .ic{width:44px;height:44px;flex:0 0 44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--purple-soft)}.mgroup .mgt{flex:1}.mgroup .t{font-weight:800;font-size:16.5px}.mgroup .s{color:var(--muted);font-size:13px;margin-top:2px}.mgroup .num{color:var(--purple);font-size:12px;font-weight:800;margin-top:4px}.mgarrow{font-size:26px;color:var(--muted);transition:transform .15s}.mgroup[open] .mgarrow{transform:rotate(90deg)}.mgroup[open]>summary{border-bottom:1px solid var(--line);background:var(--purple-soft)}.mggrid{padding:10px}
 .dots{display:flex;gap:4px;margin-top:6px}.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--ok)}
 .badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--blue-soft);color:var(--blue)}
 .badge.ok{background:var(--ok-soft);color:var(--ok)}.badge.gold{background:var(--gold-soft);color:#8a6410}.badge.purple{background:var(--purple-soft);color:var(--purple)}
@@ -8981,8 +8982,32 @@ function viewTests(){const c=S.testCfg;
   return wrap}
 
 /* ================= Grammar modules ================= */
-function viewModules(){return el('div',{},el('h1',{},'Grammar modules'),el('p',{class:'lead'},(LANG==='kz'?'Each module collects grammar that follows the same or very similar rules – from all levels – with a short, simple explanation, a summary table and its own exercises.':'Each module collects grammar that follows the same or very similar rules – from all levels – with a short, simple explanation, a summary table and its own exercises.')),
-  MODULES.length?el('div',{class:'grid'},[...MODULES].filter(m=>m.group!=='church'&&m.id!=='christian').sort((a,b)=>{const O=['kg-olgii','christian','ch-prayer','ch-worship','ch-v-love','ch-v-jesus','ch-v-faith','ch-v-psalms','ch-v-others','g-handwriting'];return (O.indexOf(a.id)+1||99)-(O.indexOf(b.id)+1||99)}).map(m=>el('button',{class:'lcard mod',onclick:()=>go('module',{module:m.id,song:null})},el('div',{class:'ic'},m.icon),el('div',{},el('div',{class:'num'},'MODULE'),el('div',{class:'t'},m.title),el('div',{class:'s'},m.sub||''),P.m[m.id]!=null?el('span',{class:'badge purple',style:'margin-top:6px'},`Best: ${P.m[m.id]}%`):null)))):el('div',{class:'card'},'Grammar modules are being prepared.'))}
+const MODGROUPS={mn:[
+ ['🔤','Sounds and building words','How endings change, and how new words are made',['g-harmony','g-wordform','g-pairs']],
+ ['🧩','Cases, place and pronouns','in, on, from, with … · where? · my, your · myself, each other',['g-cases','g-verbcase','g-place','g-possessive','g-pronouns']],
+ ['⏳','Verb forms','past, present, future · how an action goes · “I heard” · be done / make do',['g-tenses','g-aspect','g-hearsay','g-voice']],
+ ['🚶','Useful verbs','coming and going · one verb, many meanings · тэгэх, ингэх, гэх',['g-motion','g-meanings','g-prowords']],
+ ['🎚️','Want, can, must – and commands','like, want, can, must · probably, I think · do it!, let’s',['g-modal','g-guess','g-commands']],
+ ['🔗','Linking sentences','and then · when, before, after · if, because · “the man who …”',['g-converbs','g-timeclauses','g-ifbecause','g-clauses']],
+ ['🎨','Describing and comparing','bigger, the biggest · very, a bit',['g-compare','g-adjforms']],
+ ['❓','Questions and “not”','questions and tags · nobody, somebody, not even',['g-questions','g-negation']],
+ ['💬','Small words and spoken Mongolian','л, ч, шүү, дээ · handy phrases · fillers · spoken short forms',['g-particles','g-handy','g-linkers','g-speech']]],
+ kz:[
+ ['🔤','Sounds and building words','How endings change, and how new words are made',['kg-harmony','kg-wordform']],
+ ['🧩','Cases, place and pronouns','in, on, from, with … · where? · my, your · myself, each other',['kg-cases','kg-verbcase','kg-place','kg-possessive','kg-pronouns']],
+ ['⏳','“To be” and verb forms','I am, there is, not · past, present, future · “I heard” · be done / make do',['kg-copula','kg-tenses','kg-hearsay','kg-voice']],
+ ['🎚️','Want, can, must – and commands','like, want, can, must · do it!, let’s',['kg-modal','kg-commands']],
+ ['🔗','Linking sentences','and then · helper verbs · if, because · “the man who …”',['kg-converbs','kg-ifbecause','kg-clauses']],
+ ['❓','Questions and “not”','questions and small particles · nobody, nothing, never',['kg-questions','kg-negation']]]};
+let MODOPEN={};
+function modCard(m){return el('button',{class:'lcard mod',onclick:()=>go('module',{module:m.id,song:null})},el('div',{class:'ic'},m.icon),el('div',{},el('div',{class:'num'},'MODULE'),el('div',{class:'t'},m.title),el('div',{class:'s'},m.sub||''),P.m[m.id]!=null?el('span',{class:'badge purple',style:'margin-top:6px'},`Best: ${P.m[m.id]}%`):null))}
+function viewModules(){const all=[...MODULES].filter(m=>m.group!=='church'&&m.id!=='christian');const by=Object.fromEntries(all.map(m=>[m.id,m]));const used=new Set();
+  const groups=(MODGROUPS[LANG]||[]).map(([ic,t,sub,ids])=>{const ms=ids.map(x=>by[x]).filter(Boolean);ms.forEach(m=>used.add(m.id));if(!ms.length)return null;const done=ms.filter(m=>P.m[m.id]!=null).length;
+    const d=el('details',{class:'mgroup'},el('summary',{},el('div',{class:'ic'},ic),el('div',{class:'mgt'},el('div',{class:'t'},t),el('div',{class:'s'},sub),el('div',{class:'num'},ms.length+' modules'+(done?' · '+done+' practised':''))),el('span',{class:'mgarrow'},'›')),el('div',{class:'grid mggrid'},ms.map(modCard)));
+    if(MODOPEN[LANG+t])d.open=true;d.addEventListener('toggle',()=>{MODOPEN[LANG+t]=d.open});return d}).filter(Boolean);
+  const O=['kg-olgii','g-numbers','kg-numbers','g-work','g-handwriting'];const rest=all.filter(m=>!used.has(m.id)).sort((a,b)=>(O.indexOf(a.id)+1||99)-(O.indexOf(b.id)+1||99));
+  return el('div',{},el('h1',{},'Grammar modules'),el('p',{class:'lead'},'Each module collects grammar that follows the same or very similar rules – from all levels – with a short, simple explanation, a summary table and its own exercises. Tap a group to see its modules.'),
+  MODULES.length?el('div',{},el('div',{class:'mgroups'},groups),rest.length?el('h2',{},'More modules'):null,rest.length?el('div',{class:'grid'},rest.map(modCard)):null):el('div',{class:'card'},'Grammar modules are being prepared.'))}
 function modLessons(m){return m.lessons?m.lessons.map(id=>LBYID[id]).filter(Boolean):LESSONS.filter(l=>(l.tags||[]).some(t=>(m.tags||[]).includes(t)))}
 function olgWords(W){const base=w=>w.mn.replace(/\s*\([^)]*\)\s*$/,'').trim();const OB=new Set(W.filter(w=>w.tags.has('olgii')).map(base).concat(Object.keys(OLGM)));return W.filter(w=>w.tags.has('olgii')||(/\)\s*$/.test(w.mn)&&OB.has(base(w)))).map(w=>{if(!w.tags.has('olgii'))w.tags.add('olgii');return w})}
 function modVocab(m){if(m.id==='kg-olgii'&&LANG==='kz'){const seen=new Set();return (m.vocab||[]).concat(olgWords(wordBank()).map(w=>[w.mn,w.en])).filter(v=>{const k=srsKey([v[0]]);if(seen.has(k))return false;seen.add(k);return true})}return m.vocabFn?m.vocabFn():(m.vocab||[])}
