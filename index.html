@@ -9704,7 +9704,9 @@ async function revExport(all){const r=revState();const recs=await recAll();const
   files.splice(1,0,{name:'corrections.txt',data:enc.encode(txt)});
   const fn='MN-KZ-review-'+LANG+'-'+(r.name||'reviewer').replace(/[^\w\-]+/g,'_')+'-'+new Date().toISOString().slice(0,10)+'.zip';const blob=makeZip(files);const file=new File([blob],fn,{type:'application/zip'});
   let shared=false;try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:fn,text:'[MN-KZ app] Review '+L+' – please send to nlmmongolia@nlm.no'});shared=true}}catch(e){if(e&&e.name==='AbortError')return}
-  if(!shared){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.append(a);a.click();a.remove()}
+  if(!shared){let dl=null;try{if(window.claude&&typeof window.claude.use==='function')dl=await window.claude.use('downloads')}catch(e){}
+    if(dl){try{await dl.save({filename:fn,data:blob})}catch(e){if(e&&e.code==='declined')return;return alert('The file could not be saved here ('+((e&&e.code)||'error')+'). Nothing was lost – try again, or use “Copy corrections as text” instead.')}}
+    else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.append(a);a.click();a.remove()}}
   fx.forEach(([k,v])=>v.x=1);revSave(r);for(const x of rs){x.x=1;await recPut(x)}
   alert(shared?'Done – the file was shared.':'The file "'+fn+'" was saved (Downloads). Send it by e-mail to nlmmongolia@nlm.no, or by Telegram/WhatsApp to Jostein.')}
 function revCopyText(){const r=revState();const fx=Object.values(r.items).filter(v=>v.st==='fix');const t=fx.map((f,i)=>(i+1)+'. '+f.where+'\n   NOW: '+f.t+'\n   FIX: '+f.fix+(f.fixEn?' = '+f.fixEn:'')+(f.note?'\n   NOTE: '+f.note:'')).join('\n');
