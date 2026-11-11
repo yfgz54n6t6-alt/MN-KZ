@@ -174,7 +174,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .tile.right{border-color:var(--ok);background:var(--ok-soft)}.tile.wrong{border-color:var(--bad);background:var(--bad-soft)}
 .fillsent{font-size:24px;font-weight:700;line-height:1.7;padding:12px 4px 14px}.fillsent .gap{background:#fff3cc;border-radius:8px;padding:2px 8px;border-bottom:3px solid var(--gold)}.fillsent .gap.done{background:var(--ok-soft);border-color:var(--ok)}
 .fillopts{display:grid;gap:10px}
-.daily{background:linear-gradient(135deg,#fff6dc,#fffdf6)}.dflame{font-size:38px;margin-right:6px}
+.placecard{padding:8px 14px!important}.placecard .row{flex-wrap:nowrap!important;align-items:center;gap:8px}.placecard .btn{white-space:nowrap;flex:none}.placecard h2{font-size:15px!important}.placecard .dflame{font-size:22px!important;margin-right:4px}.placecard .dsub{font-size:12.5px;line-height:1.3}.placecard .btn{padding:6px 12px;font-size:14px}.daily{background:linear-gradient(135deg,#fff6dc,#fffdf6)}.dflame{font-size:38px;margin-right:6px}
 /* decks */
 .fgroup{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 16px;margin:12px 0}
 .fgroup>summary{cursor:pointer;display:flex;gap:12px;align-items:center;list-style:none;font-size:17px}.fgroup>summary::-webkit-details-marker{display:none}
@@ -8580,6 +8580,8 @@ function altOrders(c){const out=[];if(c.length<3)return out;const T=w=>ALT_TIME.
     const FQ=/^(дандаа|үргэлж|заримдаа|ихэвчлэн|байнга|үе үе|хааяа|ер нь|бас)$/;const fi=C.findIndex(w=>FQ.test(w));
     if(fi>=2&&Su(C[0])&&fi===L-2&&C[fi]!=='бас')add([c[0],c[fi]].concat(c.slice(1,fi),c.slice(fi+1)));
     if(fi===1&&Su(C[0])&&L===4&&C[1]!=='бас')add([c[0],c[2],c[1],c[3]]);
+    /* a pronoun subject right after a when-clause (-хад/-хэд/-ход/-хөд) may also stand first: «Утас дуугарахад би унтаж байсан» = «Би утас дуугарахад унтаж байсан» */
+    {const k=C.findIndex(w=>w.length>4&&/(хад|хэд|ход|хөд)$/.test(w));if(k>=0&&k+2<L&&Su(C[k+1])&&!C.slice(0,k+1).some(Su))add([c[k+1]].concat(c.slice(0,k+1),c.slice(k+2)))}
     /* a two-word time phrase after the pronoun subject may come first: «Бид ирэх жил Монголд байна» = «Ирэх жил бид Монголд байна» */
     if(L>=4&&Su(C[0])&&/^(энэ|ирэх|өнгөрсөн|өнөө|маргааш|өчигдөр|өнөөдөр|нөгөөдөр|долоо|ням|даваа|мягмар|лхагва|пүрэв|баасан|бямба|\d+|нэг|хоёр|гурван|дөрвөн|таван|зургаан|долоон|найман|есөн|арван)$/.test(C[1])&&/^(жил|сар|сард|хоногт|орой|өглөө|өдөр|шөнө|цагт|гарагт|гаригт|амралтаар|зун|өвөл|намар|хавар)$/.test(C[2])&&!/^(бүр|болгон|хүртэл|болтол|гаруй|орчим|хагаст)$/.test(C[3]))add([c[1],c[2],c[0]].concat(c.slice(3)));
     /* an object marked with -ыг / -аа and a place or tool word right before the verb may swap: «Би түлхүүрээ гэртээ мартчихлаа» = «Би гэртээ түлхүүрээ мартчихлаа» */
@@ -9363,7 +9365,7 @@ function drawOrder(box,it){const st=S.run.state;
     if(st.solved)actions.append(nextBtn());else{actions.append(el('button',{class:'btn ghost',disabled:!st.answer.length,onclick:()=>{st.bank=st.bank.concat(st.answer);st.answer=[];st.marks=null;st.fb=null;redraw()}},tr('clear')));
       if(st.attempts>=2)actions.append(el('button',{class:'btn ghost',onclick:reveal},tr('show')));
       actions.append(el('button',{class:'btn',disabled:st.nx?st.answer.length!==st.correct.length:st.bank.length>0,onclick:check},tr('check')))}}
-  box.append(el('div',{class:'kind'},tr('build')+(st.nx?(st.nx>1?' · ⚠️ '+st.nx+' words are extra – leave them out':' · ⚠️ one word is extra – leave it out'):'')),pic,el('div',{class:'prompt'},el('span',{class:'en'},it.s[1])),hearB,zones,actions);redraw()}
+  box.append(el('div',{class:'kind'},tr('build')+(st.nx?(st.nx>1?' · ⚠️ '+st.nx+' words are extra – leave them out':' · ⚠️ one word is extra – leave it out'):'')),pic,el('div',{class:'prompt'},el('span',{class:'en'},it.s[1])),hearB||'',zones,actions);redraw()}
 /* match */
 function drawMatch(box,it){const st=S.run.state;const grid=el('div',{class:'match'});const actions=el('div',{class:'actions'});
   function click(side,i){if(st.done.has(i))return;if(side==='L'){try{const x=st.left.find(y=>y.i===i);if(x&&audHas(x.t))audPlay(x.t)}catch(e){}}if(!st.sel||st.sel.side===side){st.sel={side,i};st.wrong=null;redraw();return}
@@ -9955,8 +9957,8 @@ function placeResult(R){const by={};R.items.forEach((it,i)=>{if(!it.pl)return;co
     lesson?el('button',{class:'btn green',onclick:()=>go('lesson',{lesson:lesson.id,tab:'order'})},'Go to this lesson →'):null)}
 function startPlacement(book){startRun({title:'🧭 Level test',items:placeItems(),placement:true,navKey:'home-'+book,back:()=>go('home',{book})})}
 function placeCard(book){if(book!==BOOKKEYS[0])return null;const pl=P.place&&LBYID[P.place.lesson];
-  return el('div',{class:'card block placecard',style:'margin-top:12px'},el('div',{class:'row'},el('div',{class:'dflame'},'🧭'),el('div',{},el('h2',{style:'margin:0;font-size:17px'},pl?'Level test: start at '+lessonLabel(pl):'Not sure where to start?'),el('div',{class:'muted small dsub'},pl?pl.title+' · you can take the test again':'Take the level test – about 10 minutes. Just guess if you don’t know.')),el('span',{class:'spacer'}),
-    el('button',{class:'btn ghost',onclick:()=>startPlacement(book)},pl?'Test again':'Start the test →')))}
+  return el('div',{class:'card block placecard',style:'margin-top:10px'},el('div',{class:'row'},el('div',{class:'dflame'},'🧭'),el('div',{},el('h2',{style:'margin:0;font-size:17px'},pl?'Level test: start at '+lessonLabel(pl):'Not sure where to start?'),el('div',{class:'muted small dsub'},pl?pl.title+' · you can take the test again':'Take the level test (10 min).')),el('span',{class:'spacer'}),
+    el('button',{class:'btn ghost',onclick:()=>startPlacement(book)},pl?'Test again':'Start →')))}
 
 /* --- typing --- */
 function tyRows(){const R=MNKEYS;return LANG==='kz'?{top:R[1],home:R[2],bot:R[3],spec:R[0]}:{top:R[0],home:R[1],bot:R[2],spec:['ө','ү']}}
