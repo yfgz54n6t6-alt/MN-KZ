@@ -8636,6 +8636,9 @@ function lessonsInRange(book,from,to){return lessonsOf(book).filter(l=>l.n>=from
 const ALT_TIME=new Set((LANG==='kz'?'кеше бүгін ертең қазір таңертең кешке түнде түсте күндіз жазда қыста күзде көктемде бүрсігүні алдыңғы_күні биыл былтыр әдетте кейде енді бұрын ертеде сосын содан кейін күнде апта_сайын жыл_сайын әрдайым жиі қашан':'өчигдөр өнөөдөр маргааш одоо өглөө орой шөнө өдөр зун өвөл намар хавар нөгөөдөр уржигдар энэ_жил ноднин ихэвчлэн заримдаа дандаа үргэлж өмнө_нь өдөр_бүр жил_бүр хэзээ').split(' ').map(x=>x.replace(/_/g,' ')));
 const ALT_SUBJ=new Set((LANG==='kz'?'мен сен сіз ол біз сендер сіздер олар':'би чи та тэр бид тэд').split(' '));
 function altOrders(c){const out=[];if(c.length<3)return out;const T=w=>ALT_TIME.has(w),Su=w=>ALT_SUBJ.has(w);
+  /* a form of address after the comma may also come first: «Уйлахаа боль, миний хүү» = «Миний хүү, уйлахаа боль» */
+  if(LANG==='mn'&&!c._v){const ci=c.map((w,i)=>/,$/.test(w)?i:-1).filter(i=>i>=0);if(ci.length===1&&ci[0]>=1){const k=ci[0],tl=c.slice(k+1),TL=tl.map(w=>w.toLowerCase().replace(/[.,!?]/g,''));
+    if((tl.length===2&&(TL[0]==='миний'||TL[1]==='минь'||/^(аа|ээ|оо|өө)$/.test(TL[1])))&&!/^(гэхдээ|харин|тэгээд|учир|би|чи|та|бид|тийм|үгүй|биш|за)$/.test(TL[0])){const cc=c.slice();cc._v=1;return [tl.concat(c.slice(0,k+1))].concat(altOrders(cc))}}}
   /* a sentence-final particle (оо, ээ, шүү, даа …) stays last; reorder the rest */
   if(LANG==='mn'&&c.length>=4&&/^(оо|ээ|өө|аа|шүү|даа|дээ|доо|дөө|биз)[.!?]*$/.test(c[c.length-1].toLowerCase()))return altOrders(c.slice(0,-1)).map(o=>o.concat([c[c.length-1]]));
   /* a short dialogue «… . — … .»: the first sentence may be reordered by the same rules */
@@ -8688,6 +8691,8 @@ function altOrders(c){const out=[];if(c.length<3)return out;const T=w=>ALT_TIME.
     /* a bare destination and a two-word instrumental phrase after the pronoun subject may swap before a verb of motion: «Бид төмөр замаар Эрдэнэт явсан» = «Бид Эрдэнэт төмөр замаар явсан» */
     if(L===5&&Su(C[0])&&/^(яв|ир|оч|буц|хүр|нис)/.test(C[4])){const ins=w=>w.length>4&&/(аар|ээр|оор|өөр|иар|иор)$/.test(w),pl=w=>/^[А-ЯӨҮ]/.test(w)&&(!mnCase(w,'',false)||mnCase(w,'',false).cat==='dat'),md=w=>!mnCase(w,'',false)&&!T(w)&&!Su(w)&&!/^[А-ЯӨҮ]/.test(w)&&!/^(хүртэл|болтол|руу|рүү|луу|лүү|шиг|бас|ч|л|нь|их|маш|хамт|битгий|бүү)$/.test(w);
       if(md(c[1])&&ins(C[2])&&pl(c[3]))add([c[0],c[3],c[1],c[2],c[4]]);else if(pl(c[1])&&md(c[2])&&ins(C[3]))add([c[0],c[2],c[3],c[1],c[4]])}
+    /* an object (-ыг) and a «from» word (-аас) before the verb may swap: «Тэр үнэнийг надаас нуусан» = «Тэр надаас үнэнийг нуусан» */
+    if(L===4&&Su(C[0])){const a1=mnCase(c[1],'',false),a2=mnCase(c[2],'',false);if(a1&&a2&&((a1.cat==='acc'&&!a1.pron&&a2.cat==='abl')||(a2.cat==='acc'&&!a2.pron&&a1.cat==='abl'))&&/(ыг|ийг|г)$/.test(a1.cat==='acc'?C[1]:C[2])&&!/^(байна|байсан|бий|илүү|дээр)$/.test(C[3]))add([c[0],c[2],c[1],c[3]])}
     const X=ALTX[C.join(' ')];if(X)X.forEach(x=>add(x.split(' ')));
     /* «Би шуудангаар захидал явуулсан» = «Би захидал шуудангаар явуулсан»: a case-marked adverbial right after the subject may swap with a bare object right before the verb */
     if(L>=4){const k=L-3;const cs=mnCase(c[k],'',false);const isAdv=!/^(байна|байсан|байгаа|байх|бий|вэ|бэ|уу|үү|юу|юү|хэрэгтэй|ёстой|болно|дуртай|дургүй)$/.test(C[L-1])&&(cs&&/^(ins|abl|dat)$/.test(cs.cat)&&!cs.pron)||(C[k].length>4&&/(аар|ээр|оор|өөр|иар|иор)$/.test(C[k]));const ob=C[k+1];
