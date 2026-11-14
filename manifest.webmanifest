@@ -1,7 +1,7 @@
 {
- "name": "Mongolsk & kasakhisk – leksjoner og flashcards",
- "short_name": "Språk MN/KZ",
- "description": "Leksjoner, øvelser og flashcards i mongolsk og kasakhisk.",
+ "name": "Mongolian & Kazakh – Lessons & Flashcards",
+ "short_name": "Learn MN/KZ",
+ "description": "Lessons, exercises and flashcards in Mongolian and Kazakh.",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",

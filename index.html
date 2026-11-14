@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Språk MN/KZ">
+<meta name="apple-mobile-web-app-title" content="Learn MN/KZ">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <title>Mongolian &amp; Kazakh – Lessons &amp; Flashcards</title>
@@ -8679,6 +8679,15 @@ function altOrders(c){const out=[];if(c.length<3)return out;const T=w=>ALT_TIME.
     /* an object marked with -ыг / -аа and a place or tool word right before the verb may swap: «Би түлхүүрээ гэртээ мартчихлаа» = «Би гэртээ түлхүүрээ мартчихлаа» */
     if(L>=4&&Su(C[L-4])&&L-4===0){const k=L-3;const c1=mnCase(c[k],'',false),c2=mnCase(c[k+1],'',false);const bad=w=>/(ын|ийн|ны|ний|нхаа|нхээ|нхоо|нхөө|ангаа|энгээ|онгоо|өнгөө)$/.test(w)||MOD.test(w)||T(w);
       if(c1&&c2&&!c1.pron&&!c2.pron&&!bad(C[k])&&!bad(C[k+1])&&((c1.cat==='acc'&&/^(dat|ins)$/.test(c2.cat))||(c2.cat==='acc'&&/^(dat|ins)$/.test(c1.cat)))&&!/^(байна|байсан|бий|дуртай|дургүй|хэрэгтэй)$/.test(C[L-1]))add([c[0],c[k+1],c[k],c[L-1]])}
+    /* a place phrase with a postposition (… дээр / доор / дотор) and a bare noun subject may swap at the start: «Хар зам дээр машин хурдан явдаг» = «Машин хар зам дээр хурдан явдаг» */
+    {const PP=/^(дээр|доор|дотор|дунд|хажууд|ард)$/,ADVV=/^(хурдан|удаан|их|сайн|олон|байнга|дандаа|үргэлж|заримдаа|ихэвчлэн)$/,NOV=/^(байна|байсан|байгаа|бий|байдаг|алга|вэ|бэ|уу|үү)$/;
+     const bare=w=>!mnCase(w,'',false)&&!MOD.test(w)&&!T(w)&&!ADVV.test(w)&&!PP.test(w)&&!/^(маш|нь|ч|л|бас|том|жижиг|сайхан|сайн|муу|шинэ|хуучин|олон|цөөн|хүйтэн|халуун|дулаан|их|бага|юу|хэн|ямар)$/.test(w)&&!/(тай|тэй|той|гүй|ын|ийн|ны|ний|гийн|сан|сэн|сон|сөн|даг|дэг|дог|дөг|ж|ч|аад|ээд|оод|өөд)$/.test(w);
+     for(const k of [1,2]){if(PP.test(C[k])&&L>=k+3&&L<=k+4&&bare(C[k+1])&&!NOV.test(C[L-1])&&(L===k+3||ADVV.test(C[k+2]))&&!Su(C[0])&&!T(C[0])){add([c[k+1]].concat(c.slice(0,k+1),c.slice(k+2)));break}}
+     for(const k of [2,3]){if(PP.test(C[k])&&L>=k+2&&L<=k+3&&bare(C[0])&&!Su(C[0])&&!NOV.test(C[L-1])&&(L===k+2||ADVV.test(C[k+1]))&&!bareSkip(C,k)){add(c.slice(1,k+1).concat([c[0]],c.slice(k+1)));break}}
+     function bareSkip(C,k){return C.slice(1,k).some(w=>T(w)||Su(w)||/(ыг|ийг|аар|ээр|оор|өөр|аас|ээс|оос|өөс|руу|рүү)$/.test(w))}}
+    /* a bare destination and a two-word instrumental phrase after the pronoun subject may swap before a verb of motion: «Бид төмөр замаар Эрдэнэт явсан» = «Бид Эрдэнэт төмөр замаар явсан» */
+    if(L===5&&Su(C[0])&&/^(яв|ир|оч|буц|хүр|нис)/.test(C[4])){const ins=w=>w.length>4&&/(аар|ээр|оор|өөр|иар|иор)$/.test(w),pl=w=>/^[А-ЯӨҮ]/.test(w)&&(!mnCase(w,'',false)||mnCase(w,'',false).cat==='dat'),md=w=>!mnCase(w,'',false)&&!T(w)&&!Su(w)&&!/^[А-ЯӨҮ]/.test(w)&&!/^(хүртэл|болтол|руу|рүү|луу|лүү|шиг|бас|ч|л|нь|их|маш|хамт|битгий|бүү)$/.test(w);
+      if(md(c[1])&&ins(C[2])&&pl(c[3]))add([c[0],c[3],c[1],c[2],c[4]]);else if(pl(c[1])&&md(c[2])&&ins(C[3]))add([c[0],c[2],c[3],c[1],c[4]])}
     const X=ALTX[C.join(' ')];if(X)X.forEach(x=>add(x.split(' ')));
     /* «Би шуудангаар захидал явуулсан» = «Би захидал шуудангаар явуулсан»: a case-marked adverbial right after the subject may swap with a bare object right before the verb */
     if(L>=4){const k=L-3;const cs=mnCase(c[k],'',false);const isAdv=!/^(байна|байсан|байгаа|байх|бий|вэ|бэ|уу|үү|юу|юү|хэрэгтэй|ёстой|болно|дуртай|дургүй)$/.test(C[L-1])&&(cs&&/^(ins|abl|dat)$/.test(cs.cat)&&!cs.pron)||(C[k].length>4&&/(аар|ээр|оор|өөр|иар|иор)$/.test(C[k]));const ob=C[k+1];
@@ -8748,7 +8757,7 @@ function altOrders(c){const out=[];if(c.length<3)return out;const T=w=>ALT_TIME.
      }}
   }catch(e){}}
   return out}
-const ALTX={'энэ миний ном':['миний ном энэ'],'би чиний сурсан дууг сурмаар байна':['чиний сурсан дууг би сурмаар байна']};
+const ALTX={'аав залуудаа хар ажил их хийсэн':['аав залуудаа их хар ажил хийсэн'],'энэ миний ном':['миний ном энэ'],'би чиний сурсан дууг сурмаар байна':['чиний сурсан дууг би сурмаар байна']};
 function makeTiles(mn){
   const m=mn.trim().match(/^(.*?)([.?!…]+)?$/s);const body=m[1].trim(),punct=m[2]||'';
   const words=body.split(/\s+/).filter(Boolean).map(w=>w.replace(/_/g,' '));
